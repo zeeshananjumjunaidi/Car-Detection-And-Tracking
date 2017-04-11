@@ -6,6 +6,7 @@ import numpy as np
 import glob, time
 from FeatureExtractor import FeatureExtractor
 from sklearn.svm import LinearSVC
+from sklearn.neural_network import MLPClassifier
 from sklearn.calibration import CalibratedClassifierCV
 #from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
@@ -115,12 +116,12 @@ class VehicleClassifier():
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_TRAIN_RATIO,
                                                             random_state=RANDOM_STATE)
 
-        # Train the linear SVC
-        print("Training SVC...")
-        svc = LinearSVC()
+        # Train the linear MLP
+        print("Training MLP...")
+        mlp = MLPClassifier()# LinearSVC()
 
 
-        self.clf = CalibratedClassifierCV(svc)
+        self.clf = CalibratedClassifierCV(mlp)
         t = time.time()
         self.clf.fit(X_train, y_train)
         t2 = time.time()
@@ -128,7 +129,7 @@ class VehicleClassifier():
 
         self.trained = True
 
-        # Check the score of the SVC on the test set
+        # Check the score of the mlp on the test set
         print('Classifier test set accuracy: {}'.format(round(self.score(X_test, y_test), 4)))
 
 
@@ -170,6 +171,17 @@ class VehicleClassifier():
         '''
         if self.trained:
             return self.clf.predict(X)
+        else:
+            print("ERROR: trained model not found")
+
+
+    def decision_function(self,X,y):
+        '''
+        Calculate the Decision function of the hyperplane
+        :param X: Input parameter
+        '''
+        if self.trained:
+            return self.clf.decision_function(np.c_[X.ravel(), y.ravel()])
         else:
             print("ERROR: trained model not found")
 

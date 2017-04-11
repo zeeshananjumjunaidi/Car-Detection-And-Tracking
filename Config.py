@@ -1,6 +1,6 @@
 # CONSTANTS FOR FEATURES SELECTION
 
-CSPACE = 'YCrCb'            # default: 'RGB' other values could be
+CSPACE = 'YCrCb'            # default: 'RGB' other values could be | Y = luma component, Cr = Red difference, Cb Blue difference of chroma component
 HIST_RANGE = (0, 256)       # default: (0, 256)
 HIST_BIN = 16               # default: 32
 SPATIAL_SIZE = 16           # default: 32

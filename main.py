@@ -7,7 +7,7 @@ import matplotlib.image as mpimg
 from VehicleDetector import VehicleDetector
 from VehicleClassifier import VehicleClassifier
 from moviepy.editor import VideoFileClip
-
+import time
 
 # Training images paths
 TRAINING_PATH_VEHICLES = "data/vehicles"
@@ -132,18 +132,19 @@ if __name__ == "__main__":
     # Load a previously trained VehicleClassifier
     vc2 = VehicleClassifier(TRAINING_PATH_TRAINED_MODEL)
     vc2.load_model(MODEL_NAME)
-
+    #print('Start')
     # Process a single test image
-    TEST_FILE_NAME = "test17.jpg"
-    process_single_image(TEST_IMAGES_PATH + '/' + TEST_FILE_NAME, vc2,verbose=True)
-
+    TEST_FILE_NAME = "test16.jpg"
+    t1=time.time()
+    process_single_image(TEST_IMAGES_PATH + '/' + TEST_FILE_NAME, vc2,verbose=False)
+    print('{:.3f} sec to process single frame'.format(time.time()-t1))
     # Process all images in test_image folder
     #process_test_images(vc2)
 
     # Process the video using the trained classifier
     #process_video('difficult_video',vc2)
     #process_video("test_video", vc2)
-    process_video("project_video", vc2)
+    #process_video("project_video", vc2)
 
     #to get hog feature image for write_up document
     #generate_sample_for_write_up()

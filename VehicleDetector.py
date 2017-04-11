@@ -166,7 +166,9 @@ class VehicleDetector():
             #print(time.time()-t,'sec')
             # If prediction is 1 (= vehicle) then save the window
             score_predict = self.clf.score(test_features,[1])
-            if prediction == 1 and score_predict>=1:
+            #decision_functions=self.clf.decision_function(test_features)
+            #print(decision_functions)
+            if prediction == 1 and score_predict >= 1:
                 #print(score_predict)
                 on_windows.append(window)
 
