@@ -5,26 +5,26 @@ HOG, Spatial Bins, Histogram of Colors
 import numpy as np
 import cv2
 import matplotlib.image as mpimg
-from skimage.feature import hog
+from skimage.feature import hog as hog_s
+
 
 class FeatureExtractor():
-    def __get_hog_features(self, img, orient, pix_per_cell, cell_per_block, vis, feature_vec):
+
+    def get_hog_features(self, img, orient, pix_per_cell, cell_per_block, vis, feature_vec):
         '''Calculate HOG features and visualization'''
 
-        if vis == True:
-            return hog(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
+        if vis is True:
+            return hog_s(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
                        cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=True,
                        visualise=vis, feature_vector=feature_vec)
         else:
-            return hog(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
+            return hog_s(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
                        cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=True,
                        visualise=vis, feature_vector=feature_vec)
-
 
     def __bin_spatial(self, img, size):
         '''Calculate binned color features'''
         return cv2.resize(img, size).ravel()
-
 
     def __color_hist(self, img, nbins, bins_range):
         '''Calculate histograms, bin centers and feature vector'''
@@ -61,19 +61,18 @@ class FeatureExtractor():
 
         # Apply __color_hist() also with a color space option now
         hist_features = self.__color_hist(feature_image, nbins=hist_bins, bins_range=hist_range)
-
         # Extract HOG features
         if hog_channel == 'ALL':
             hog_features = []
             # Process each color channel
             for channel in range(feature_image.shape[2]):
-                hog_features.append(self.__get_hog_features(feature_image[:, :, channel],
+                hog_features.append(self.get_hog_features(feature_image[:, :, channel],
                                                             hog_orient, hog_pix_per_cell, hog_cell_per_block,
                                                             vis=False, feature_vec=True))
             hog_features = np.ravel(hog_features)
         else:
             # Use a 3 channel color space
-            hog_features = self.__get_hog_features(feature_image[:, :, hog_channel], hog_orient,
+            hog_features = self.get_hog_features(feature_image[:, :, hog_channel], hog_orient,
                                                    hog_pix_per_cell, hog_cell_per_block, vis=False, feature_vec=True)
 
         # Return the feature vectors

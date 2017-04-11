@@ -7,16 +7,16 @@ from scipy.ndimage.measurements import label
 import matplotlib.pyplot as plt
 from Config import *
 import lane_detection as ld
-
+import time
 # from https://github.com/zeeshananjumjunaidi/Advanced-Lane-Detection
 # Miscellaneous constants
 IMG_SHAPE = (12, 8)
 TRAINING_IMAGE_SHAPE = (64, 64)
 
 # Detection constants
-HEAT_THRESHOLD = 2                 # threshold for a single frame's heatmap
+HEAT_THRESHOLD = 2                # threshold for a single frame's heatmap
 HEAT_SMOOTH_FACTOR = 0.4            # smoothing factor for heatmaps of the current and previous frame
-HEAT_MULTI_FRAME_THRESHOLD = 5      # threshold for the heatmap of a number of frames combined
+HEAT_MULTI_FRAME_THRESHOLD = 3      # threshold for the heatmap of a number of frames combined
 
 
 
@@ -161,10 +161,13 @@ class VehicleDetector():
             test_features = self.clf.X_scalar.transform(np.array(features).reshape(1, -1))
 
             # Predict using the classifier
+            #t=time.time()
             prediction = self.clf.predict(test_features)
-
+            #print(time.time()-t,'sec')
             # If prediction is 1 (= vehicle) then save the window
-            if prediction == 1:
+            score_predict = self.clf.score(test_features,[1])
+            if prediction == 1 and score_predict>=1:
+                #print(score_predict)
                 on_windows.append(window)
 
         # Return windows for positive detections
@@ -192,6 +195,16 @@ class VehicleDetector():
         # in succession this parameter should be set to False
         if new_image:
             self.previous_heatmap = None
+
+        # # Grid 0 (closest to the horizon)
+        # win_size = 30
+        # y_start = int(frame.shape[0] / 2) + 20
+        # y_stop = y_start + win_size / 0.75
+        # x_start = 400
+        # x_stop = None
+        # windows_smallest = slide_window(frame, x_start_stop=[x_start, x_stop], y_start_stop=[y_start, y_stop],
+        #                              xy_window=(win_size, win_size), xy_overlap=(0.5, 0.5))
+        #all_windows += windows_smallest
 
         # Grid 1 (closest to the horizon)
         win_size = 60
@@ -309,7 +322,7 @@ class VehicleDetector():
         # 6. Draw the bounding boxes of the detected regions in the original image/frame
         window_hot = draw_labeled_bboxes(np.copy(frame), labels)
 #         print(lane_detect_copy.shape,window_hot.shape)
-        final_img = cv2.addWeighted(lane_detect_copy, 0.5, window_hot,1, 0)
+        final_img = cv2.addWeighted(lane_detect_copy, 0.5, window_hot,0.5, 0)
         #final_img=window_hot
         # Show detected car blobs
         if verbose:
